@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:background="@drawable/cardview"
+            android:background="#dee4ed"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
