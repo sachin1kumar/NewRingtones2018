@@ -18,9 +18,9 @@ class MainActivity : AppCompatActivity() {
     private var recyclerView: RecyclerView? = null
 
     //Add a list items in String
-    val listContent = arrayOf("apple_ring", "astronomia")
+    val listContent = arrayOf("apple_ring", "astronomia","nice_ringtone")
     //Add a resource of music files in Array
-    val resID = intArrayOf(R.raw.apple_ring, R.raw.astronomia)
+    val resID = intArrayOf(R.raw.apple_ring, R.raw.astronomia,R.raw.nice_ringtone)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

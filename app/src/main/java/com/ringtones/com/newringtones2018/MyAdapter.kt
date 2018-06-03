@@ -43,21 +43,7 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
 
             var setRingtone = SetRingtonFragment()
 
-      /*      if (!playing){
-                ringtones!!.set(0, mp)
-                holder.playBtn!!.setImageResource(R.drawable.baseline_stop_black_24)
-                mp!!.start()
-                playing=true
-            }
-            else{
-                var mp1:MediaPlayer = ringtones!!.get(0)
-                mp1!!.stop()// stops any current playing song
-                mp1!!.release()
-                holder.playBtn!!.setImageResource(android.R.drawable.ic_media_play)
-                playing=false
-            }*/
-
-            setRingtone.setMedia(mp,listContent[position])
+            setRingtone.setMedia(mp,listContent[position],resID[position])
 
             fragManager
                     .beginTransaction()
