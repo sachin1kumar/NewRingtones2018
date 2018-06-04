@@ -34,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:background="@android:drawable/ic_media_play" />
+                    android:background="@mipmap/outline_play_circle_filled_white_black_48dp" />
 
             </LinearLayout>
 
