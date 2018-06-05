@@ -66,7 +66,6 @@ class SetRingtonFragment : Fragment(){
         mp!!.start()
 
         setDefaultRingtone!!.setOnClickListener(View.OnClickListener {
-            isStopped=true
             isRingtone=true
 
             if (isRingtone)
@@ -74,7 +73,6 @@ class SetRingtonFragment : Fragment(){
         })
 
         setNotificationRingtone!!.setOnClickListener(View.OnClickListener {
-            isStopped=true
             isNotification=true
 
             if (isNotification)
@@ -82,7 +80,6 @@ class SetRingtonFragment : Fragment(){
         })
 
         setAlarmRingtone!!.setOnClickListener(View.OnClickListener {
-            isStopped=true
             isAlarm=true
 
             if (isAlarm)
