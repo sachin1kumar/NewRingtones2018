@@ -43,6 +43,8 @@ class SetRingtonFragment : Fragment(){
     private var setDefaultRingtone:LinearLayout? = null
     private var setNotificationRingtone:LinearLayout? = null
     private var setAlarmRingtone:LinearLayout? = null
+    private var rateIt:LinearLayout? = null
+    private var shareIt:LinearLayout? = null
     private var isStopped: Boolean = false
     private var fileName:String = ""
     private val fPAth = "android.resource://com.ringtones.com.newringtones2018/raw/"+fileName
@@ -62,6 +64,9 @@ class SetRingtonFragment : Fragment(){
         setDefaultRingtone = view!!.findViewById(R.id.call_ringtone)
         setNotificationRingtone = view!!.findViewById(R.id.notification_ringtone)
         setAlarmRingtone = view!!.findViewById(R.id.alarm_ringtone)
+        rateIt = view!!.findViewById(R.id.rate)
+        shareIt = view!!.findViewById(R.id.share)
+
 
         mp!!.start()
 
@@ -89,6 +94,29 @@ class SetRingtonFragment : Fragment(){
         stopRingtone!!.setOnClickListener(View.OnClickListener {
             isStopped=true
             stopMedia()
+        })
+
+        rateIt!!.setOnClickListener(View.OnClickListener {
+            isStopped = true
+            stopMedia()
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context!!.packageName)))
+
+        })
+
+        shareIt!!.setOnClickListener(View.OnClickListener {
+            isStopped = true
+            stopMedia()
+            try {
+                val i = Intent(Intent.ACTION_SEND)
+                i.type = "text/plain"
+                i.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
+                var sAux = "\nLet me recommend you this application\n\n"
+                sAux = sAux + "https://play.google.com/store/apps/details?id=" + context!!.packageName
+                i.putExtra(Intent.EXTRA_TEXT, sAux)
+                startActivity(Intent.createChooser(i, "choose one"))
+            } catch (e: Exception) {
+                //e.toString();
+            }
         })
 
         return view
