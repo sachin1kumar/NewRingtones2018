@@ -9,8 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.media.MediaPlayer
 import android.support.v4.app.FragmentManager
-import android.view.View.VISIBLE
-import android.widget.ProgressBar
+import android.support.v7.widget.CardView
 import com.google.android.gms.ads.AdView
 
 
@@ -20,9 +19,6 @@ import com.google.android.gms.ads.AdView
 class MyAdapter(var context: Context, val listContent: Array<String>, val resID: IntArray, var fragManager: FragmentManager,
                 var mAdView : AdView) :
         RecyclerView.Adapter<MyAdapter.ViewHolder>() {
-
-    //var mp: MediaPlayer? = MediaPlayer()
-    var playing:Boolean = false
 
     var ringtones:Array<MediaPlayer>? = Array<MediaPlayer>(1, { MediaPlayer() } )
 
@@ -34,6 +30,7 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var ringtoneName: TextView? = itemView.findViewById(R.id.name)
         var playBtn: ImageView? = itemView.findViewById(R.id.options)
+        var cardView: CardView? = itemView.findViewById(R.id.card_view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -42,26 +39,35 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
 
         holder.playBtn!!.setOnClickListener(View.OnClickListener { v: View? ->
 
-            mAdView.visibility=View.GONE
+            performOnclick(position)
 
-            var mp: MediaPlayer = MediaPlayer.create(context, resID[position])
+        })
 
-            var setRingtone = SetRingtonFragment()
-            setRingtone.passAdReference(mAdView)
+        holder.cardView!!.setOnClickListener(View.OnClickListener { v: View? ->
 
-            setRingtone.setMedia(mp,listContent[position],resID[position])
-
-            fragManager
-                    .beginTransaction()
-                    .replace(R.id.content_frame, setRingtone, "ringtone")
-                    .addToBackStack(null)
-                    .commit()
-
+            performOnclick(position)
         })
     }
 
     override fun getItemCount(): Int {
         return listContent!!.size
+    }
+
+    private fun performOnclick(mPosition : Int){
+        mAdView.visibility=View.GONE
+
+        var mp: MediaPlayer = MediaPlayer.create(context, resID[mPosition])
+
+        var setRingtone = SetRingtonFragment()
+        setRingtone.passAdReference(mAdView)
+
+        setRingtone.setMedia(mp,listContent[mPosition],resID[mPosition])
+
+        fragManager
+                .beginTransaction()
+                .replace(R.id.content_frame, setRingtone, "ringtone")
+                .addToBackStack(null)
+                .commit()
     }
 
 }

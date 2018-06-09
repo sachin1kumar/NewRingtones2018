@@ -29,6 +29,7 @@ import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.provider.Settings
 import android.support.v4.content.ContextCompat
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import java.io.FileNotFoundException
@@ -49,7 +50,6 @@ class SetRingtonFragment : Fragment(){
     private var shareIt:LinearLayout? = null
     private var isStopped: Boolean = false
     private var fileName:String = ""
-    private val fPAth = "android.resource://com.ringtones.com.newringtones2018/raw/"+fileName
     private val PERMISSION_REQUEST_CODE = 1
     private var isRingtone: Boolean = false
     private var isNotification: Boolean = false
@@ -57,6 +57,7 @@ class SetRingtonFragment : Fragment(){
     private var resourceId: Int = 0
     private lateinit var mAdViewRingtone : AdView
     private lateinit var mMainAdView : AdView
+    private var isAdClick: Boolean = true;
 
 
 
@@ -77,11 +78,13 @@ class SetRingtonFragment : Fragment(){
         val adRequest = AdRequest.Builder().build()
         mAdViewRingtone.loadAd(adRequest)
 
+        adListener()
 
         mp!!.start()
 
         setDefaultRingtone!!.setOnClickListener(View.OnClickListener {
             isRingtone=true
+            isAdClick=false
 
             if (isRingtone)
                 performOperation()
@@ -89,6 +92,8 @@ class SetRingtonFragment : Fragment(){
 
         setNotificationRingtone!!.setOnClickListener(View.OnClickListener {
             isNotification=true
+            isAdClick=false
+
 
             if (isNotification)
                 performOperation()
@@ -96,6 +101,8 @@ class SetRingtonFragment : Fragment(){
 
         setAlarmRingtone!!.setOnClickListener(View.OnClickListener {
             isAlarm=true
+            isAdClick=false
+
 
             if (isAlarm)
                 performOperation()
@@ -103,20 +110,29 @@ class SetRingtonFragment : Fragment(){
 
         stopRingtone!!.setOnClickListener(View.OnClickListener {
             isStopped=true
+            isAdClick=false
+
             stopMedia()
             mMainAdView.visibility=View.VISIBLE
         })
 
         rateIt!!.setOnClickListener(View.OnClickListener {
             isStopped = true
+            isAdClick=false
+
             stopMedia()
+            mMainAdView.visibility=View.VISIBLE
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context!!.packageName)))
 
         })
 
         shareIt!!.setOnClickListener(View.OnClickListener {
             isStopped = true
+            isAdClick=false
+
             stopMedia()
+            mMainAdView.visibility=View.VISIBLE
+
             try {
                 val i = Intent(Intent.ACTION_SEND)
                 i.type = "text/plain"
@@ -131,6 +147,36 @@ class SetRingtonFragment : Fragment(){
         })
 
         return view
+    }
+
+    private fun adListener() {
+        mAdViewRingtone!!.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            override fun onAdFailedToLoad(errorCode : Int) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+
+            override fun onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+                isAdClick=true
+                isStopped=true
+                stopMedia()
+                mMainAdView.visibility=View.VISIBLE
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when when the user is about to return
+                // to the app after tapping on an ad.
+            }
+        }
     }
 
     fun setMedia(media: MediaPlayer,fileN: String,resId: Int){
@@ -184,7 +230,7 @@ class SetRingtonFragment : Fragment(){
         }
     }
 
-    fun stopMedia(){
+    fun stopMedia() {
         mp!!.stop()// stops any current playing song
         mp!!.release()
         fragmentManager!!.popBackStack()
