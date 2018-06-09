@@ -29,6 +29,8 @@ import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.provider.Settings
 import android.support.v4.content.ContextCompat
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
@@ -53,6 +55,10 @@ class SetRingtonFragment : Fragment(){
     private var isNotification: Boolean = false
     private var isAlarm: Boolean = false
     private var resourceId: Int = 0
+    private lateinit var mAdViewRingtone : AdView
+    private lateinit var mMainAdView : AdView
+
+
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -66,6 +72,10 @@ class SetRingtonFragment : Fragment(){
         setAlarmRingtone = view!!.findViewById(R.id.alarm_ringtone)
         rateIt = view!!.findViewById(R.id.rate)
         shareIt = view!!.findViewById(R.id.share)
+
+        mAdViewRingtone = view!!.findViewById(R.id.adBigBanner)
+        val adRequest = AdRequest.Builder().build()
+        mAdViewRingtone.loadAd(adRequest)
 
 
         mp!!.start()
@@ -94,6 +104,7 @@ class SetRingtonFragment : Fragment(){
         stopRingtone!!.setOnClickListener(View.OnClickListener {
             isStopped=true
             stopMedia()
+            mMainAdView.visibility=View.VISIBLE
         })
 
         rateIt!!.setOnClickListener(View.OnClickListener {
@@ -451,6 +462,9 @@ class SetRingtonFragment : Fragment(){
         Toast.makeText(context!!, StringBuilder().append("Ringtone set successfully !"), Toast.LENGTH_SHORT).show()
     }
 
+    fun passAdReference(mAdView: AdView) {
+        mMainAdView = mAdView
+    }
 
 
 }

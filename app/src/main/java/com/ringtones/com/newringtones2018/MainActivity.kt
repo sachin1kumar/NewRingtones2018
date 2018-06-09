@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.AdRequest
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private var context: Context? = null
     private var mTabLayout: TabLayout? = null
     private var recyclerView: RecyclerView? = null
+    private lateinit var mAdView : AdView
+
 
     //Add a list items in String
     val listContent = arrayOf("Base gente remix","Shape of you","Apple ringtone","Apple ringtone extended","Base william voodoo", "Astronomia","Nice ringtone","Dad is calling","Titanic flute","Fade"
@@ -30,6 +35,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Initialize ad mob
+        MobileAds.initialize(this, getString(R.string.admob_app_id))
+
+        viewAds()
+
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         mTabLayout = findViewById(R.id.tabs)
@@ -40,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         context = this
 
-        adapter = MyAdapter(context as MainActivity,listContent,resID, (context as MainActivity).supportFragmentManager)
+        adapter = MyAdapter(context as MainActivity,listContent,resID, (context as MainActivity).supportFragmentManager,
+                mAdView)
 
         var mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         recyclerView!!.layoutManager = mLayoutManager
@@ -58,6 +69,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        mAdView.visibility=View.VISIBLE
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+    }
+
+    private fun viewAds(){
+        mAdView = findViewById(R.id.adBanner)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
     }
 
 }

@@ -11,16 +11,19 @@ import android.media.MediaPlayer
 import android.support.v4.app.FragmentManager
 import android.view.View.VISIBLE
 import android.widget.ProgressBar
+import com.google.android.gms.ads.AdView
 
 
 /**
  * Created by sachin on 17/12/17.
  */
-class MyAdapter(var context: Context, val listContent: Array<String>, val resID: IntArray, var fragManager: FragmentManager) :
+class MyAdapter(var context: Context, val listContent: Array<String>, val resID: IntArray, var fragManager: FragmentManager,
+                var mAdView : AdView) :
         RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 
     //var mp: MediaPlayer? = MediaPlayer()
     var playing:Boolean = false
+
     var ringtones:Array<MediaPlayer>? = Array<MediaPlayer>(1, { MediaPlayer() } )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,9 +42,12 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
 
         holder.playBtn!!.setOnClickListener(View.OnClickListener { v: View? ->
 
+            mAdView.visibility=View.GONE
+
             var mp: MediaPlayer = MediaPlayer.create(context, resID[position])
 
             var setRingtone = SetRingtonFragment()
+            setRingtone.passAdReference(mAdView)
 
             setRingtone.setMedia(mp,listContent[position],resID[position])
 
