@@ -71,6 +71,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        overridePendingTransition(R.anim.abc_slide_in_top,
+                R.anim.abc_slide_in_bottom)
+
         mAdView.visibility=View.VISIBLE
     }
 

@@ -65,6 +65,7 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
 
         fragManager
                 .beginTransaction()
+                .setCustomAnimations(R.anim.abc_slide_in_bottom,R.anim.abc_slide_in_top)
                 .replace(R.id.content_frame, setRingtone, "ringtone")
                 .addToBackStack(null)
                 .commit()
