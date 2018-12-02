@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.example.dynamicfeature.SetTone"
-    split="@string/title_dynamicfeature">
+    split="dynamicFeature">
 
     <dist:module
         dist:onDemand="true"
@@ -13,6 +13,7 @@
     <application>
         <activity android:name="com.example.dynamicfeature.MainActivity">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>

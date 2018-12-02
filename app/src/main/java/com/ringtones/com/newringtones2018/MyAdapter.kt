@@ -53,6 +53,7 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
                     //startIntentSender(state.resolutionIntent()?.intentSender, null, 0, 0, 0)
                 }
                 SplitInstallSessionStatus.INSTALLED -> {
+                    Toast.makeText(context,"installed",Toast.LENGTH_SHORT).show()
                     onSuccessfulLoad(name, launch = !multiInstall)
                 }
 
@@ -125,13 +126,13 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
                         // You can download multiple on demand modules per
                         // request by invoking the following method for each
                         // module you want to install.
-                        .addModule("SetTone")
+                        .addModule("dynamicFeature")
                         .build()
 
         // Skip loading if the module already is installed. Perform success action directly.
-        if (manager.installedModules.contains("SetTone")) {
+        if (manager.installedModules.contains("dynamicFeature")) {
             //updateProgressMessage("Already installed")
-            onSuccessfulLoad("SetTone", launch = true)
+            onSuccessfulLoad("dynamicFeature", launch = true)
             return
         }
 
@@ -141,10 +142,10 @@ class MyAdapter(var context: Context, val listContent: Array<String>, val resID:
 
     private fun onSuccessfulLoad(moduleName: String, launch: Boolean) {
         if (launch) {
-            var intent = Intent()
-            intent.setClassName("com.example.dynamicfeature",
-                    "MainActivity")
-            startActivity(context,intent,null)
+            Toast.makeText(context,"Onsuccessfulload",Toast.LENGTH_SHORT).show()
+
+            var intent1 = Intent(context, Class.forName("com.example.dynamicfeature.MainActivity"))
+            context.startActivity(intent1)
         }
     }
 
