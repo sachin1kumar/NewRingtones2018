@@ -1,6 +1,7 @@
 package com.ringtones.com.newringtones2018
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -10,10 +11,17 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.Toast
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.AdRequest
 import com.google.android.play.core.splitcompat.SplitCompat
+import com.google.android.play.core.splitinstall.SplitInstallManager
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import com.google.android.play.core.splitinstall.SplitInstallRequest
+import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
+import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +30,8 @@ class MainActivity : AppCompatActivity() {
     private var context: Context? = null
     private var mTabLayout: TabLayout? = null
     private var recyclerView: RecyclerView? = null
-    private lateinit var mAdView : AdView
+    private var mFabButton: FrameLayout? = null
+    private lateinit var manager: SplitInstallManager
 
 
     //Add a list items in String
@@ -39,9 +48,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        manager = SplitInstallManagerFactory.create(this)
         SplitCompat.install(this)
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
@@ -50,20 +58,20 @@ class MainActivity : AppCompatActivity() {
         //Initialize ad mob
         MobileAds.initialize(this, getString(R.string.admob_app_id))
 
-        viewAds()
-
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         mTabLayout = findViewById(R.id.tabs)
         mToolbar!!.setTitle(R.string.app_name)
+        mFabButton = findViewById(R.id.about)
 
         setHeadingOnTab()
+        dynamicFeature()
 
         recyclerView = findViewById(R.id.recyclerView)
         context = this
 
-        adapter = MyAdapter(context as MainActivity,listContent,resID, (context as MainActivity).supportFragmentManager,
-                mAdView)
+
+        adapter = MyAdapter(context as MainActivity,listContent,resID, (context as MainActivity).supportFragmentManager)
 
         var mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         recyclerView!!.layoutManager = mLayoutManager
@@ -77,25 +85,85 @@ class MainActivity : AppCompatActivity() {
         mTabLayout!!.addTab(mTabLayout!!.newTab().setText("Play and set your tone"))
     }
 
+    private fun dynamicFeature(){
+
+        manager.registerListener(listener)
+
+        mFabButton!!.setOnClickListener {
+            // Creates a request to install a module.
+            var request: SplitInstallRequest =
+                    SplitInstallRequest
+                            .newBuilder()
+                            // You can download multiple on demand modules per
+                            // request by invoking the following method for each
+                            // module you want to install.
+                            .addModule("dynamicFeature")
+                            .build()
+
+            // Skip loading if the module already is installed. Perform success action directly.
+            if (manager.installedModules.contains("dynamicFeature")) {
+                //updateProgressMessage("Already installed")
+                onSuccessfulLoad("dynamicFeature", launch = true)
+            }
+
+            manager.startInstall(request)
+        }
+    }
+
 
 
     override fun onBackPressed() {
         super.onBackPressed()
+        finish()
         overridePendingTransition(R.anim.abc_slide_in_top,
                 R.anim.abc_slide_in_bottom)
 
-        mAdView.visibility=View.VISIBLE
     }
 
-    override fun onRestart() {
-        super.onRestart()
+    /** Listener used to handle changes in state for install requests. */
+    private val listener = SplitInstallStateUpdatedListener { state ->
+        val multiInstall = state.moduleNames().size > 1
+        state.moduleNames().forEach { name ->
+            // Handle changes in state.
+            when (state.status()) {
+                SplitInstallSessionStatus.DOWNLOADING -> {
+                    //  In order to see this, the application has to be uploaded to the Play Store.
+                    //displayLoadingState(state, "Downloading $name")
+                    Toast.makeText(this,"downloading",Toast.LENGTH_SHORT).show()
+                }
+                SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> {
+                    /*
+                      This may occur when attempting to download a sufficiently large module.
 
+                      In order to see this, the application has to be uploaded to the Play Store.
+                      Then features can be requested until the confirmation path is triggered.
+                     */
+                    //startIntentSender(state.resolutionIntent()?.intentSender, null, 0, 0, 0)
+                }
+                SplitInstallSessionStatus.INSTALLED -> {
+                    Toast.makeText(this,"installed",Toast.LENGTH_SHORT).show()
+                    onSuccessfulLoad(name, launch = !multiInstall)
+                }
+
+                SplitInstallSessionStatus.INSTALLING ->
+                    Toast.makeText(this,"installing..",Toast.LENGTH_SHORT).show()
+
+                SplitInstallSessionStatus.FAILED -> {
+                    //toastAndLog("Error: ${state.errorCode()} for module ${state.moduleNames()}")
+                    Toast.makeText(this,"failed",Toast.LENGTH_SHORT).show()
+
+                }
+            }
+        }
     }
 
-    private fun viewAds(){
-        mAdView = findViewById(R.id.adBanner)
-        val adRequest = AdRequest.Builder().build()
-        mAdView.loadAd(adRequest)
+    private fun onSuccessfulLoad(moduleName: String, launch: Boolean) {
+        if (launch) {
+            Toast.makeText(this,"Onsuccessfulload",Toast.LENGTH_SHORT).show()
+
+            var intent1 = Intent(this, Class.forName("com.example.dynamicfeature.MainActivity"))
+            startActivity(intent1)
+        }
     }
 
 }

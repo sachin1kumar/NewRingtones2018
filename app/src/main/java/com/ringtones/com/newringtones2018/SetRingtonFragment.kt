@@ -56,7 +56,6 @@ class SetRingtonFragment : Fragment(){
     private var isAlarm: Boolean = false
     private var resourceId: Int = 0
     private lateinit var mAdViewRingtone : AdView
-    private lateinit var mMainAdView : AdView
     private var isAdClick: Boolean = true;
 
 
@@ -113,7 +112,6 @@ class SetRingtonFragment : Fragment(){
             isAdClick=false
 
             stopMedia()
-            mMainAdView.visibility=View.VISIBLE
         })
 
         rateIt!!.setOnClickListener(View.OnClickListener {
@@ -121,7 +119,6 @@ class SetRingtonFragment : Fragment(){
             isAdClick=false
 
             stopMedia()
-            mMainAdView.visibility=View.VISIBLE
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context!!.packageName)))
 
         })
@@ -131,7 +128,6 @@ class SetRingtonFragment : Fragment(){
             isAdClick=false
 
             stopMedia()
-            mMainAdView.visibility=View.VISIBLE
 
             try {
                 val i = Intent(Intent.ACTION_SEND)
@@ -169,7 +165,6 @@ class SetRingtonFragment : Fragment(){
                 isAdClick=true
                 isStopped=true
                 stopMedia()
-                mMainAdView.visibility=View.VISIBLE
             }
 
             override fun onAdClosed() {
@@ -508,9 +503,6 @@ class SetRingtonFragment : Fragment(){
         Toast.makeText(context!!, StringBuilder().append("Ringtone set successfully !"), Toast.LENGTH_SHORT).show()
     }
 
-    fun passAdReference(mAdView: AdView) {
-        mMainAdView = mAdView
-    }
 
 
 }
