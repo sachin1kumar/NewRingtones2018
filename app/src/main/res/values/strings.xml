@@ -2,4 +2,14 @@
     <string name="app_name">Top Ringtones</string>
     <string name="admob_app_id">ca-app-pub-6284415471291338~6090340839</string>
     <string name="title_dynamicfeature">SetTone</string>
+    <string name="txt_Welcome">StartApp Interstitial Showcase</string>
+    <string name="txt_SecondActivity">Welcome to another Activity</string>
+    <string name="gdpr_okBtn">Continue</string>
+    <string name="gdpr_cancelBtn">No Thanks</string>
+    <string name="gdpr_title">Would like us to present you with personalized ads?</string>
+    <string name="gdpr_body">This app uses StartApp to enable/provide you with a personalized advertising experience. By clicking, ‘continue’ you agree to share your personal data on StartApp’s Network and its Business Partners and agree to the StartApp privacy policy in order to allow StartApp and its Partners to provide you with relevant ads.</string>
+    <string name="gdpr_logo">StartApp logo</string>
+    <string name="main_nextBtn">Next Activity</string>
+    <string name="main_rewardedBtn">Show Rewarded Video</string>
+    <string name="menu_ads">Personalized Ads</string>
 </resources>

@@ -1,7 +1,9 @@
 package com.ringtones.com.newringtones2018
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -11,7 +13,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -22,6 +26,9 @@ import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import com.google.android.play.core.splitinstall.SplitInstallRequest
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
+import com.startapp.android.publish.ads.nativead.NativeAdPreferences
+import com.startapp.android.publish.adsCommon.StartAppSDK
+import com.startapp.android.publish.ads.nativead.StartAppNativeAd
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,8 +37,9 @@ class MainActivity : AppCompatActivity() {
     private var context: Context? = null
     private var mTabLayout: TabLayout? = null
     private var recyclerView: RecyclerView? = null
-    private var mFabButton: FrameLayout? = null
     private lateinit var manager: SplitInstallManager
+    private val startAppNativeAd = StartAppNativeAd(this)
+    private val SHARED_PREFS_GDPR_SHOWN = "gdpr_dialog_was_shown"
 
 
     //Add a list items in String
@@ -47,6 +55,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        initStartAppSdkAccordingToConsent()
+
         setContentView(R.layout.activity_main)
         manager = SplitInstallManagerFactory.create(this)
         SplitCompat.install(this)
@@ -55,14 +66,10 @@ class MainActivity : AppCompatActivity() {
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
         }
 
-        //Initialize ad mob
-        MobileAds.initialize(this, getString(R.string.admob_app_id))
-
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         mTabLayout = findViewById(R.id.tabs)
         mToolbar!!.setTitle(R.string.app_name)
-        mFabButton = findViewById(R.id.about)
 
         setHeadingOnTab()
         dynamicFeature()
@@ -89,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
         manager.registerListener(listener)
 
-        mFabButton!!.setOnClickListener {
+       /* mFabButton!!.setOnClickListener {
             // Creates a request to install a module.
             var request: SplitInstallRequest =
                     SplitInstallRequest
@@ -107,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             manager.startInstall(request)
-        }
+        }*/
     }
 
 
@@ -164,6 +171,62 @@ class MainActivity : AppCompatActivity() {
             var intent1 = Intent(this, Class.forName("com.example.dynamicfeature.MainActivity"))
             startActivity(intent1)
         }
+    }
+
+
+    private fun initStartAppSdkAccordingToConsent() {
+        if (getPreferences(Context.MODE_PRIVATE).getBoolean(SHARED_PREFS_GDPR_SHOWN, false)) {
+            initStartAppSdk()
+        }
+        else {
+            showGdprDialog()
+        }
+    }
+
+    private fun showGdprDialog() {
+        var view: View = layoutInflater.inflate(R.layout.dialog_gdpr, null)
+        var dialog  = Dialog(this, android.R.style.Theme_Light_NoTitleBar)
+        dialog.setContentView(view)
+/*
+        var medium: Typeface = Typeface.createFromAsset(getAssets(), "gotham_medium.ttf")
+        var book: Typeface  = Typeface.createFromAsset(getAssets(), "gotham_book.ttf")*/
+
+        var okBtn: Button = view.findViewById(R.id.okBtn)
+        //okBtn.typeface = medium
+
+        okBtn.setOnClickListener {
+
+            writePersonalizedAdsConsent(true)
+            dialog.dismiss()
+        }
+
+        var cancelBtn: Button  = view.findViewById(R.id.cancelBtn)
+        //cancelBtn.typeface = medium
+
+        cancelBtn.setOnClickListener {
+
+            writePersonalizedAdsConsent(false)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun writePersonalizedAdsConsent(userConsent: Boolean) {
+        StartAppSDK.setUserConsent(this,
+                "pas",
+                System.currentTimeMillis(),
+                userConsent)
+
+        getPreferences(Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(SHARED_PREFS_GDPR_SHOWN, true)
+                .commit()
+    }
+
+    private fun initStartAppSdk() {
+        //Initialize start-app sdk
+        StartAppSDK.init(this, "200809134", true)
     }
 
 }
