@@ -10,7 +10,7 @@ android {
         applicationId "com.ringtones.com.newringtones2018"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 21
+        versionCode 22
         versionName "3.0"
     }
     buildTypes {
@@ -38,7 +38,7 @@ android {
         }
     }
 
-    dynamicFeatures = [':dynamicFeature']
+    //dynamicFeatures = [':dynamicFeature']
 
 
 }

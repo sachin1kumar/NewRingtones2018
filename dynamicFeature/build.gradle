@@ -1,3 +1,4 @@
+/*
 apply plugin: 'com.android.dynamic-feature'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -10,8 +11,10 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        /*versionCode 9
-        versionName "10.3"*/
+        */
+/*versionCode 9
+        versionName "10.3"*//*
+
 
     }
 
@@ -23,3 +26,4 @@ dependencies {
     implementation project(':app')
     implementation 'com.android.support:appcompat-v7:27.1.0'
 }
+*/
