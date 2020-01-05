@@ -55,7 +55,7 @@ class SetRingtonFragment : Fragment(){
     private var isNotification: Boolean = false
     private var isAlarm: Boolean = false
     private var resourceId: Int = 0
-    private lateinit var mAdViewRingtone : AdView
+    //private lateinit var mAdViewRingtone : AdView
     private var isAdClick: Boolean = true;
 
 
@@ -73,9 +73,9 @@ class SetRingtonFragment : Fragment(){
         rateIt = view!!.findViewById(R.id.rate)
         shareIt = view!!.findViewById(R.id.share)
 
-        mAdViewRingtone = view!!.findViewById(R.id.adBigBanner)
+       // mAdViewRingtone = view!!.findViewById(R.id.adBigBanner)
         val adRequest = AdRequest.Builder().build()
-        mAdViewRingtone.loadAd(adRequest)
+       // mAdViewRingtone.loadAd(adRequest)
 
         adListener()
 
@@ -146,7 +146,7 @@ class SetRingtonFragment : Fragment(){
     }
 
     private fun adListener() {
-        mAdViewRingtone!!.adListener = object: AdListener() {
+        /*mAdViewRingtone!!.adListener = object: AdListener() {
             override fun onAdLoaded() {
                 // Code to be executed when an ad finishes loading.
             }
@@ -171,7 +171,7 @@ class SetRingtonFragment : Fragment(){
                 // Code to be executed when when the user is about to return
                 // to the app after tapping on an ad.
             }
-        }
+        }*/
     }
 
     fun setMedia(media: MediaPlayer,fileN: String,resId: Int){
