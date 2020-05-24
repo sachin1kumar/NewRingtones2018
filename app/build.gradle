@@ -57,5 +57,6 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.startapp:inapp-sdk:4.5.0'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.github.claucookie.miniequalizer:library:1.0.0'
 
 }
