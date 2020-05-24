@@ -12,4 +12,6 @@
     <string name="main_nextBtn">Next Activity</string>
     <string name="main_rewardedBtn">Show Rewarded Video</string>
     <string name="menu_ads">Personalized Ads</string>
+    <string name="play_msg">Play and set your tone</string>
+    <string name="app_id">200809134</string>
 </resources>

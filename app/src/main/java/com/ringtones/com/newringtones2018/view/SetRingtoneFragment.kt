@@ -1,129 +1,108 @@
-package com.ringtones.com.newringtones2018
+package com.ringtones.com.newringtones2018.view
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
-import android.media.MediaPlayer
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.*
-import android.widget.LinearLayout
-import android.media.RingtoneManager
-import android.provider.MediaStore
-import java.nio.file.Files.delete
 import android.content.ContentValues
-import android.net.Uri
-import java.io.File
-import android.widget.Toast
-import android.content.ContentResolver
-import android.os.Environment.getExternalStorageDirectory
-import android.content.Context.AUDIO_SERVICE
-import android.media.AudioManager
-import android.content.res.AssetFileDescriptor
 import android.content.Intent
-import android.provider.Settings.System.canWrite
-import android.os.Build
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.media.MediaPlayer
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
 import android.os.Environment
-import android.support.v4.app.ActivityCompat
+import android.provider.MediaStore
 import android.provider.Settings
-import android.support.v4.content.ContextCompat
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import java.io.FileNotFoundException
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.ringtones.com.newringtones2018.R
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-
-class SetRingtonFragment : Fragment(){
+class SetRingtoneFragment : Fragment(){
 
     @get:JvmName("getContext_")
-    private var view: View? = null
-    private var mp: MediaPlayer? = null
-    private var stopRingtone: LinearLayout? = null
-    private var setDefaultRingtone:LinearLayout? = null
-    private var setNotificationRingtone:LinearLayout? = null
-    private var setAlarmRingtone:LinearLayout? = null
-    private var rateIt:LinearLayout? = null
-    private var shareIt:LinearLayout? = null
+    private lateinit var view: View
+    private lateinit var mp: MediaPlayer
+    private lateinit var stopRingtone: LinearLayout
+    private lateinit var setDefaultRingtone:LinearLayout
+    private lateinit var setNotificationRingtone:LinearLayout
+    private lateinit var setAlarmRingtone:LinearLayout
+    private lateinit var rateIt:LinearLayout
+    private lateinit var shareIt:LinearLayout
     private var isStopped: Boolean = false
     private var fileName:String = ""
-    private val PERMISSION_REQUEST_CODE = 1
+    private val PERMISSIONREQUESTCODE = 1
     private var isRingtone: Boolean = false
     private var isNotification: Boolean = false
     private var isAlarm: Boolean = false
     private var resourceId: Int = 0
-    //private lateinit var mAdViewRingtone : AdView
     private var isAdClick: Boolean = true;
 
-
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        view = inflater!!.inflate(R.layout.set_ringtone, container, false)
-        stopRingtone = view!!.findViewById(R.id.stop_ringtone)
-        setDefaultRingtone = view!!.findViewById(R.id.call_ringtone)
-        setNotificationRingtone = view!!.findViewById(R.id.notification_ringtone)
-        setAlarmRingtone = view!!.findViewById(R.id.alarm_ringtone)
-        rateIt = view!!.findViewById(R.id.rate)
-        shareIt = view!!.findViewById(R.id.share)
-
-       // mAdViewRingtone = view!!.findViewById(R.id.adBigBanner)
-        val adRequest = AdRequest.Builder().build()
-       // mAdViewRingtone.loadAd(adRequest)
+        view = inflater.inflate(R.layout.set_ringtone, container, false)
+        stopRingtone = view.findViewById(R.id.stop_ringtone)
+        setDefaultRingtone = view.findViewById(R.id.call_ringtone)
+        setNotificationRingtone = view.findViewById(R.id.notification_ringtone)
+        setAlarmRingtone = view.findViewById(R.id.alarm_ringtone)
+        rateIt = view.findViewById(R.id.rate)
+        shareIt = view.findViewById(R.id.share)
 
         adListener()
 
-        mp!!.start()
+        mp.start()
 
-        setDefaultRingtone!!.setOnClickListener(View.OnClickListener {
+        setDefaultRingtone.setOnClickListener{
             isRingtone=true
             isAdClick=false
 
             if (isRingtone)
                 performOperation()
-        })
+        }
 
-        setNotificationRingtone!!.setOnClickListener(View.OnClickListener {
+        setNotificationRingtone.setOnClickListener{
             isNotification=true
             isAdClick=false
 
 
             if (isNotification)
                 performOperation()
-        })
+        }
 
-        setAlarmRingtone!!.setOnClickListener(View.OnClickListener {
+        setAlarmRingtone.setOnClickListener {
             isAlarm=true
             isAdClick=false
 
 
             if (isAlarm)
                 performOperation()
-        })
+        }
 
-        stopRingtone!!.setOnClickListener(View.OnClickListener {
+        stopRingtone.setOnClickListener {
             isStopped=true
             isAdClick=false
 
             stopMedia()
-        })
+        }
 
-        rateIt!!.setOnClickListener(View.OnClickListener {
+        rateIt.setOnClickListener {
             isStopped = true
             isAdClick=false
 
             stopMedia()
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context!!.packageName)))
 
-        })
+        }
 
-        shareIt!!.setOnClickListener(View.OnClickListener {
+        shareIt.setOnClickListener {
             isStopped = true
             isAdClick=false
 
@@ -140,7 +119,7 @@ class SetRingtonFragment : Fragment(){
             } catch (e: Exception) {
                 //e.toString();
             }
-        })
+        }
 
         return view
     }
@@ -185,17 +164,19 @@ class SetRingtonFragment : Fragment(){
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkPermission()) {
                 if (Settings.System.canWrite(context!!)) {
-                    if (isAlarm){
-                        setAlarmRingtone()
-                    }
-                    else if(isNotification){
-                        setNotificationRingtone()
-                    }
-                    else{
-                        setRingtone()
+                    when {
+                        isAlarm -> {
+                            setAlarmRingtone()
+                        }
+                        isNotification -> {
+                            setNotificationRingtone()
+                        }
+                        else -> {
+                            setRingtone()
+                        }
                     }
                 } else {
-                    var intent: Intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                    val intent: Intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS)
                             .setData(Uri.parse("package:" + context!!.getPackageName()))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -205,14 +186,16 @@ class SetRingtonFragment : Fragment(){
                 requestPermission();
             }
         } else {
-            if (isAlarm){
-                setAlarmRingtone()
-            }
-            else if(isNotification){
-                setNotificationRingtone()
-            }
-            else{
-                setRingtone()
+            when {
+                isAlarm -> {
+                    setAlarmRingtone()
+                }
+                isNotification -> {
+                    setNotificationRingtone()
+                }
+                else -> {
+                    setRingtone()
+                }
             }
         }
     }
@@ -225,43 +208,38 @@ class SetRingtonFragment : Fragment(){
         }
     }
 
-    fun stopMedia() {
-        mp!!.stop()// stops any current playing song
-        mp!!.release()
-        fragmentManager!!.popBackStack()
+    private fun stopMedia() {
+        mp.stop()// stops any current playing song
+        mp.release()
+        fragmentManager?.popBackStack()
     }
 
-    private fun checkPermission(): Boolean {
-        val result = ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return if (result == PackageManager.PERMISSION_GRANTED) {
-            true
-        } else {
-            false
-        }
-    }
+    private fun checkPermission() = ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+
 
     private fun requestPermission() {
-
         if (ActivityCompat.shouldShowRequestPermissionRationale((context as Activity?)!!, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Toast.makeText(context!!, "Write External Storage permission allows us to do store audios. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show()
         } else {
-            ActivityCompat.requestPermissions((context as Activity?)!!, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
+            ActivityCompat.requestPermissions((context as Activity?)!!, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSIONREQUESTCODE)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            PERMISSION_REQUEST_CODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            PERMISSIONREQUESTCODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (Build.VERSION.SDK_INT >= 23) {
                     if (Settings.System.canWrite(context!!)) {
-                        if (isAlarm){
-                            setAlarmRingtone()
-                        }
-                        else if(isNotification){
-                            setNotificationRingtone()
-                        }
-                        else{
-                            setRingtone()
+                        when {
+                            isAlarm -> {
+                                setAlarmRingtone()
+                            }
+                            isNotification -> {
+                                setNotificationRingtone()
+                            }
+                            else -> {
+                                setRingtone()
+                            }
                         }
                     } else {
                         val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS)
@@ -321,13 +299,13 @@ class SetRingtonFragment : Fragment(){
             }
         }
 
-        var cursor : Cursor = context!!.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        val cursor : Cursor? = context!!.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf("_data", "_id", "is_alarm"), "_data = '" + file.getAbsolutePath() + "'",
                 null, null);
         if (cursor != null) {
-            var  idColumn = cursor.getColumnIndex("_id");
-            var fileColumn = cursor.getColumnIndex("_data");
-            var ringtoneColumn = cursor.getColumnIndex("is_alarm");
+            val  idColumn = cursor.getColumnIndex("_id");
+            val fileColumn = cursor.getColumnIndex("_data");
+            val ringtoneColumn = cursor.getColumnIndex("is_alarm");
             while (cursor.moveToNext()) {
                 var audioFilePath = cursor.getString(fileColumn);
                 if (cursor.getString(ringtoneColumn) != null && cursor.getString(ringtoneColumn).equals("1")) {
@@ -361,10 +339,10 @@ class SetRingtonFragment : Fragment(){
         val values = ContentValues()
         var isRingTone1 = false
 
-        if (Environment.getExternalStorageState() == "mounted") {
-            dir = File(Environment.getExternalStorageDirectory(), what)
+        dir = if (Environment.getExternalStorageState() == "mounted") {
+            File(Environment.getExternalStorageDirectory(), what)
         } else {
-            dir = context!!.getCacheDir()
+            context!!.cacheDir
         }
 
         if (!dir.exists()) {
@@ -397,7 +375,7 @@ class SetRingtonFragment : Fragment(){
             }
         }
 
-        var cursor : Cursor = context!!.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        var cursor : Cursor? = context!!.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf("_data", "_id", "is_notification"), "_data = '" + file.getAbsolutePath() + "'",
                 null, null);
         if (cursor != null) {
@@ -436,10 +414,10 @@ class SetRingtonFragment : Fragment(){
         val values = ContentValues()
         var isRingTone1 = false
 
-        if (Environment.getExternalStorageState() == "mounted") {
-            dir = File(Environment.getExternalStorageDirectory(), what)
+        dir = if (Environment.getExternalStorageState() == "mounted") {
+            File(Environment.getExternalStorageDirectory(), what)
         } else {
-            dir = context!!.getCacheDir()
+            context!!.cacheDir
         }
 
         if (!dir.exists()) {
@@ -472,15 +450,15 @@ class SetRingtonFragment : Fragment(){
             }
         }
 
-        var cursor : Cursor = context!!.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        val cursor : Cursor? = context!!.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf("_data", "_id", "is_ringtone"), "_data = '" + file.getAbsolutePath() + "'",
                 null, null);
         if (cursor != null) {
-            var  idColumn = cursor.getColumnIndex("_id");
-            var fileColumn = cursor.getColumnIndex("_data");
-            var ringtoneColumn = cursor.getColumnIndex("is_ringtone");
+            val  idColumn = cursor.getColumnIndex("_id");
+            val fileColumn = cursor.getColumnIndex("_data");
+            val ringtoneColumn = cursor.getColumnIndex("is_ringtone");
             while (cursor.moveToNext()) {
-                var audioFilePath = cursor.getString(fileColumn);
+                val audioFilePath = cursor.getString(fileColumn);
                 if (cursor.getString(ringtoneColumn) != null && cursor.getString(ringtoneColumn).equals("1")) {
                     newUri = Uri.withAppendedPath(MediaStore.Audio.Media.getContentUriForPath(audioFilePath), cursor.getString(idColumn));
                     isRingTone1 = true;
@@ -502,7 +480,5 @@ class SetRingtonFragment : Fragment(){
         RingtoneManager.setActualDefaultRingtoneUri(context, 1, context!!.getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values));
         Toast.makeText(context!!, StringBuilder().append("Ringtone set successfully !"), Toast.LENGTH_SHORT).show()
     }
-
-
 
 }
