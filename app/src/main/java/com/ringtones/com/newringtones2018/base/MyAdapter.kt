@@ -17,64 +17,67 @@ import es.claucookie.miniequalizerlibrary.EqualizerView
 /**
  * Created by sachin on 17/12/17.
  */
-class MyAdapter(var context: Context, private val listContent: Array<String>, private val resID: IntArray, private val fragManager: FragmentManager) :
+class MyAdapter(private var context: Context, private val listContent: Array<String>, private val resID: IntArray, private var isExpandedArray: Array<Boolean>, private val fragManager: FragmentManager) :
         RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 
+    private var mExpandedPosition: Int = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
         return ViewHolder(v)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var ringtoneName: TextView = itemView.findViewById(R.id.name)
-        var playBtn: ImageView = itemView.findViewById(R.id.options)
-        var cardView: CardView = itemView.findViewById(R.id.card_view)
-        var equilizer: EqualizerView = itemView.findViewById(R.id.equalizer_view)
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.ringtoneName.text = listContent[position]
+        isExpandedArray[position] = position == mExpandedPosition
+        holder.bind(isExpandedArray[position],listContent[position], resID[position],context,fragManager)
 
-        holder.playBtn.setOnClickListener {
-            performVisibilityOperations(holder)
-            performOnclick(position)
-        }
-
-        holder.cardView.setOnClickListener {
-            performVisibilityOperations(holder)
-            performOnclick(position)
-        }
-    }
-
-    private fun performVisibilityOperations(holder: ViewHolder){
-        if (holder.playBtn.visibility == View.VISIBLE){
-            holder.playBtn.visibility = View.GONE
-            holder.equilizer.visibility = View.VISIBLE
-            holder.equilizer.animateBars()
-        }
-        else {
-            holder.equilizer.stopBars()
-            holder.equilizer.visibility = View.GONE
-            holder.playBtn.visibility = View.VISIBLE
+        holder.itemView.setOnClickListener {
+            mExpandedPosition = if (isExpandedArray[position]) -1 else position
+            notifyDataSetChanged()
         }
     }
 
     override fun getItemCount() = listContent.size
 
-    private fun performOnclick(mPosition : Int){
-        val mp: MediaPlayer = MediaPlayer.create(context, resID[mPosition])
-        val setRingtone = SetRingtoneFragment()
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        setRingtone.setMedia(mp,listContent[mPosition],resID[mPosition])
+        private val ringtoneName: TextView
+        private val playBtn: ImageView
+        private val cardView: CardView
+        private val equilizer: EqualizerView
+        private var isExpanded: Boolean
 
-       /*TODO fragManager
-                .beginTransaction()
-                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_in_top)
-                .replace(R.id.content_frame, setRingtone, "ringtone")
-                .addToBackStack(null)
-                .commit()*/
+        init {
+            ringtoneName = itemView.findViewById(R.id.name)
+            playBtn = itemView.findViewById(R.id.options)
+            cardView = itemView.findViewById(R.id.card_view)
+            equilizer= itemView.findViewById(R.id.equalizer_view)
+            isExpanded = false
+        }
+
+        fun bind(expanded: Boolean, name: String, resource: Int, context: Context, fragManager: FragmentManager) {
+            equilizer.visibility = if (expanded) View.VISIBLE else View.GONE
+            ringtoneName.text = name
+
+            if(equilizer.visibility == View.VISIBLE){
+                val mp: MediaPlayer = MediaPlayer.create(context,resource)
+                val setRingtone = SetRingtoneFragment()
+                setRingtone.setMedia(mp,name,resource)
+                fragManager
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_in_top)
+                        .replace(R.id.content_frame, setRingtone, "ringtone")
+                        .addToBackStack(null)
+                        .commit()
+                equilizer.animateBars()
+                playBtn.visibility = View.GONE
+            }
+            else{
+                equilizer.stopBars()
+                playBtn.visibility = View.VISIBLE
+            }
+        }
+
     }
-
 
 }

@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         setHeadingOnTab()
 
         recyclerView = findViewById(R.id.recyclerView)
-        adapter = MyAdapter(this, Ringtones.listContent, Ringtones.resID, this.supportFragmentManager)
+        adapter = MyAdapter(this, Ringtones.listContent, Ringtones.resID,Ringtones.isExpanded, this.supportFragmentManager)
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = mLayoutManager

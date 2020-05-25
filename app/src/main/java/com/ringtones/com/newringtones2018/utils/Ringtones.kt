@@ -16,5 +16,7 @@ class Ringtones {
                 R.raw.i_miss_you, R.raw.iphone_8_plus_ring, R.raw.a_22, R.raw.iphone_sms_original, R.raw.zedge_best_flute, R.raw.aa_4, R.raw.aa_5, R.raw.c_17, R.raw.a_66, R.raw.b_1, R.raw.tweet_ringtone, R.raw.s8_charge_connected,
                 R.raw.warriors_pixel2, R.raw.s_16, R.raw.s_15, R.raw.s_13, R.raw.s_10, R.raw.s_7, R.raw.s_6, R.raw.s_2, R.raw.s_1, R.raw.c_8)
 
+        var isExpanded = arrayOf(false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false)
+
     }
 }
