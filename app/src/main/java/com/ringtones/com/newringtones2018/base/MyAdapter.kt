@@ -17,7 +17,7 @@ import es.claucookie.miniequalizerlibrary.EqualizerView
 /**
  * Created by sachin on 17/12/17.
  */
-class MyAdapter(private var context: Context, private val listContent: Array<String>, private val resID: IntArray, private var isExpandedArray: Array<Boolean>, private val fragManager: FragmentManager) :
+class MyAdapter(private var context: Context, private var listContent: Array<String>, private val resID: IntArray, private var isExpandedArray: Array<Boolean>, private val fragManager: FragmentManager) :
         RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 
     private var mExpandedPosition: Int = -1
@@ -78,6 +78,11 @@ class MyAdapter(private var context: Context, private val listContent: Array<Str
             }
         }
 
+    }
+
+    fun filterList(filteredList: Array<String>) {
+        listContent = filteredList
+        notifyDataSetChanged()
     }
 
 }

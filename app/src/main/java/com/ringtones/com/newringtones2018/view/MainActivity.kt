@@ -2,14 +2,15 @@ package com.ringtones.com.newringtones2018.view
 
 import android.app.Dialog
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.support.multidex.BuildConfig
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
@@ -18,12 +19,13 @@ import com.ringtones.com.newringtones2018.base.MyAdapter
 import com.ringtones.com.newringtones2018.utils.Ringtones
 import com.startapp.sdk.adsbase.StartAppSDK
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mToolbar: Toolbar
     private lateinit var adapter: MyAdapter
-    private lateinit var mTabLayout: TabLayout
     private lateinit var recyclerView: RecyclerView
+    private lateinit var searchView: EditText
     private val SHARED_PREFS_GDPR_SHOWN = "gdpr_dialog_was_shown"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,16 +41,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpUI(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimaryDark);
-        }
 
         mToolbar = findViewById(R.id.toolbar)
+        searchView = findViewById(R.id.search_view)
         setSupportActionBar(mToolbar)
-        mTabLayout = findViewById(R.id.tabs)
         mToolbar.setTitle(R.string.app_name)
-
-        setHeadingOnTab()
 
         recyclerView = findViewById(R.id.recyclerView)
         adapter = MyAdapter(this, Ringtones.listContent, Ringtones.resID,Ringtones.isExpanded, this.supportFragmentManager)
@@ -58,10 +55,37 @@ class MainActivity : AppCompatActivity() {
         recyclerView.itemAnimator
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.adapter = adapter
+
+        setSearchView()
+
     }
 
-    private fun setHeadingOnTab() {
-        mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.play_msg)))
+    private fun setSearchView() {
+        searchView.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                // When user changed the Text
+                filter(cs.toString())
+            }
+
+            override fun beforeTextChanged(arg0: CharSequence, arg1: Int, arg2: Int,
+                                           arg3: Int) {
+                // TODO Auto-generated method stub
+            }
+
+            override fun afterTextChanged(arg0: Editable) {
+                // TODO Auto-generated method stub
+            }
+        })
+    }
+
+    private fun filter(text: String) {
+        val filteredList: ArrayList<String> = ArrayList()
+        for (element in Ringtones.listContent){
+            if (element.toLowerCase().contains(text.toLowerCase())){
+                filteredList.add(element)
+            }
+        }
+        adapter.filterList(filteredList.toTypedArray())
     }
 
    /* private fun dynamicFeature(){
