@@ -17,16 +17,13 @@
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:padding="10dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/linear"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@+id/name"
-                android:gravity="right"
                 android:orientation="horizontal">
 
                 <FrameLayout
@@ -37,7 +34,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:visibility="visible"
-                        android:layout_alignParentRight="true"
                         android:background="@mipmap/outline_play_circle_filled_white_black_48dp" />
 
                     <es.claucookie.miniequalizerlibrary.EqualizerView
@@ -45,23 +41,32 @@
                         android:id="@+id/equalizer_view"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:visibility="gone"
-                        custom:foregroundColor="@color/colorPrimary"
+                        android:visibility="invisible"
+                        custom:foregroundColor="@color/colorPrimaryDark"
                         custom:animDuration="3500"/>
                 </FrameLayout>
             </LinearLayout>
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:text="testingddsasdd"
                 android:paddingTop="5dp"
+                android:layout_toRightOf="@+id/linear"
+                android:paddingLeft="10dp"
                 android:paddingBottom="5dp"
                 android:textColor="@color/text_main"
                 android:textSize="15dp"
                 card_view:fontFamily="@font/roboto" />
 
+            <ImageView
+                android:id="@+id/option_menu"
+                android:layout_toRightOf="@+id/name"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/baseline_reorder_black"
+                android:layout_alignParentRight="true" />
 
         </RelativeLayout>
 

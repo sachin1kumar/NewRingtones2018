@@ -56,7 +56,7 @@ class MyAdapter(private var context: Context, private var listContent: Array<Str
         }
 
         fun bind(expanded: Boolean, name: String, resource: Int, context: Context, fragManager: FragmentManager) {
-            equilizer.visibility = if (expanded) View.VISIBLE else View.GONE
+            equilizer.visibility = if (expanded) View.VISIBLE else View.INVISIBLE
             ringtoneName.text = name
 
             if(equilizer.visibility == View.VISIBLE){
@@ -70,7 +70,7 @@ class MyAdapter(private var context: Context, private var listContent: Array<Str
                         .addToBackStack(null)
                         .commit()
                 equilizer.animateBars()
-                playBtn.visibility = View.GONE
+                playBtn.visibility = View.INVISIBLE
             }
             else{
                 equilizer.stopBars()
