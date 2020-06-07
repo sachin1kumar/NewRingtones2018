@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="?attr/colorPrimary">
 
 
@@ -24,7 +24,7 @@
         <TextView
             android:id="@+id/toolbar_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="14dp"
             android:fontFamily="@font/roboto_medium"
@@ -39,35 +39,80 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/search_view"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:iconifiedByDefault="false"
-        android:background="@drawable/rounded_edittext"
-        android:hint="@string/search_ringtone"
-        android:padding="5dp"
-        android:drawableLeft="@android:drawable/ic_menu_search"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
-        android:imeOptions="actionSearch"
         android:layout_height="wrap_content"
-        />
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/rounded_edittext"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:hint="@string/search_ringtone"
+        android:iconifiedByDefault="false"
+        android:imeOptions="actionSearch"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:layout_below="@+id/toolbar"
+        android:autofillHints="@string/search_ringtone"
         android:background="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
-        android:autofillHints="@string/search_ringtone"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/media_parent"
         app:layout_constraintTop_toBottomOf="@+id/search_view" />
 
+    <LinearLayout
+        android:id="@+id/media_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView"
+        app:layout_constraintStart_toStartOf="parent">
 
+        <TextView
+            android:id="@+id/tv_song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="PLAY/STOP SONG."
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/tv_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:id="@+id/tv_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/tv_play_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:src="@android:drawable/ic_media_play"
+            android:text="PLAY SOUND" />
+
+        <TextView
+            android:id="@+id/tv_ad_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Advertisement"/>
+    </LinearLayout>
     <!--<FrameLayout
         android:id="@+id/about"
         android:layout_width="wrap_content"
@@ -101,6 +146,7 @@
         android:layout_width="match_parent"
         android:layout_height="747dp"
         android:layout_alignParentBottom="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

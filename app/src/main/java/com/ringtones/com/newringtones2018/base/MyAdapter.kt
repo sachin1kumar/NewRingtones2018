@@ -2,6 +2,9 @@ package com.ringtones.com.newringtones2018.base
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +20,7 @@ import es.claucookie.miniequalizerlibrary.EqualizerView
 /**
  * Created by sachin on 17/12/17.
  */
-class MyAdapter(private var context: Context, private var listContent: Array<String>, private val resID: IntArray, private var isExpandedArray: Array<Boolean>, private val fragManager: FragmentManager) :
+class MyAdapter(private var context: Context, private var handler: Handler, private var listContent: Array<String>, private val resID: IntArray, private var isExpandedArray: Array<Boolean>, private val fragManager: FragmentManager) :
         RecyclerView.Adapter<MyAdapter.ViewHolder>() {
 
     private var mExpandedPosition: Int = -1
@@ -32,6 +35,12 @@ class MyAdapter(private var context: Context, private var listContent: Array<Str
         holder.bind(isExpandedArray[position],listContent[position], resID[position],context,fragManager)
 
         holder.itemView.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("song",listContent[position])
+            bundle.putInt("id",resID[position])
+            val message = Message()
+            message.data = bundle
+            handler.sendMessage(message)
             mExpandedPosition = if (isExpandedArray[position]) -1 else position
             notifyDataSetChanged()
         }
@@ -60,7 +69,7 @@ class MyAdapter(private var context: Context, private var listContent: Array<Str
             ringtoneName.text = name
 
             if(equilizer.visibility == View.VISIBLE){
-                val mp: MediaPlayer = MediaPlayer.create(context,resource)
+                /*val mp: MediaPlayer = MediaPlayer.create(context,resource)
                 val setRingtone = SetRingtoneFragment()
                 setRingtone.setMedia(mp,name,resource)
                 fragManager
@@ -68,7 +77,7 @@ class MyAdapter(private var context: Context, private var listContent: Array<Str
                         .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_in_top)
                         .replace(R.id.content_frame, setRingtone, "ringtone")
                         .addToBackStack(null)
-                        .commit()
+                        .commit()*/
                 equilizer.animateBars()
                 playBtn.visibility = View.INVISIBLE
             }

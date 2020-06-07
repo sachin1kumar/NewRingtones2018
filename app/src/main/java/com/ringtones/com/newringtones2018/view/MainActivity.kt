@@ -2,22 +2,32 @@ package com.ringtones.com.newringtones2018.view
 
 import android.app.Dialog
 import android.content.Context
+import android.content.res.AssetFileDescriptor
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.support.multidex.BuildConfig
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ringtones.com.newringtones2018.R
 import com.ringtones.com.newringtones2018.base.MyAdapter
 import com.ringtones.com.newringtones2018.utils.Ringtones
+import com.startapp.sdk.adsbase.StartAppAd
 import com.startapp.sdk.adsbase.StartAppSDK
+import kotlin.math.ceil
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +36,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: MyAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: EditText
+    private lateinit var songName: TextView
+    private lateinit var seekBar: SeekBar
+    private lateinit var duration: TextView
+    private lateinit var playButton: FloatingActionButton
+    private lateinit var handler: Handler
     private val SHARED_PREFS_GDPR_SHOWN = "gdpr_dialog_was_shown"
+    private var mediaPlayer: MediaPlayer? = null
+    private var wasPlaying = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,20 +61,130 @@ class MainActivity : AppCompatActivity() {
 
         mToolbar = findViewById(R.id.toolbar)
         searchView = findViewById(R.id.search_view)
+        songName = findViewById(R.id.tv_song_name)
+        seekBar = findViewById(R.id.tv_seekbar)
+        duration = findViewById(R.id.tv_duration)
+        playButton = findViewById(R.id.tv_play_button)
+        setSearchView()
+        setFabButtonListener()
+        setSeekBarListener()
+        handlerCallBack()
         setSupportActionBar(mToolbar)
         mToolbar.setTitle(R.string.app_name)
 
         recyclerView = findViewById(R.id.recyclerView)
-        adapter = MyAdapter(this, Ringtones.listContent, Ringtones.resID,Ringtones.isExpanded, this.supportFragmentManager)
+        adapter = MyAdapter(this, handler, Ringtones.listContent, Ringtones.resID, Ringtones.isExpanded, this.supportFragmentManager)
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = mLayoutManager
         recyclerView.itemAnimator
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.adapter = adapter
+    }
 
-        setSearchView()
+    private fun setSeekBarListener() {
+        mediaPlayer = MediaPlayer()
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
 
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                duration.visibility = View.VISIBLE
+            }
+
+            override fun onProgressChanged(seekBar: SeekBar,progress : Int, fromTouch: Boolean) {
+                duration.visibility = View.VISIBLE
+                val x: Int = ceil(progress / 1000f).toInt()
+
+
+                if (x == 0 && !mediaPlayer?.isPlaying!!) {
+                   // clearMediaPlayer()
+                    playButton.setImageDrawable(ContextCompat.getDrawable(applicationContext, android.R.drawable.ic_media_play))
+                    seekBar.progress = 0
+                }
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar){
+                if (mediaPlayer != null && mediaPlayer?.isPlaying!!) {
+                    mediaPlayer?.seekTo(seekBar.progress);
+                }
+            }
+        })
+    }
+
+/*    fun run() {
+        var currentPosition = mediaPlayer.currentPosition
+        val total = mediaPlayer.duration
+        while (mediaPlayer.isPlaying && currentPosition < total) {
+            currentPosition = try {
+                Thread.sleep(1000)
+                mediaPlayer.currentPosition
+            } catch (e: InterruptedException) {
+                return
+            } catch (e: Exception) {
+                return
+            }
+            seekBar.progress = currentPosition
+        }
+    }*/
+
+    private fun handlerCallBack(){
+        handler = object : Handler() {
+            override fun handleMessage(msg: Message) {
+                val bundle: Bundle = msg.data
+                val resId = bundle.getInt("id")
+                val songName = bundle.getString("song")
+                songName?.let { playSong(it, resId) }
+            }
+        }
+    }
+
+    fun playSong(songName: String, resId: Int) {
+        try {
+            if (mediaPlayer !=null && mediaPlayer?.isPlaying!!) {
+                clearMediaPlayer()
+                seekBar.progress = 0
+                wasPlaying = true
+                playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_play))
+            }
+            if (!wasPlaying) {
+                val descriptor: AssetFileDescriptor = resources.openRawResourceFd(resId)
+                mediaPlayer?.setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
+                descriptor.close()
+                mediaPlayer?.prepare()
+                mediaPlayer?.setVolume(0.5f, 0.5f)
+                mediaPlayer?.isLooping = false
+                seekBar.max = mediaPlayer?.duration!!
+                mediaPlayer?.start()
+                Thread{
+                    playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_pause))
+                    var currentPosition = mediaPlayer?.currentPosition
+                    val total = mediaPlayer?.duration!!
+                    if (currentPosition != null) {
+                        while (mediaPlayer?.isPlaying!! && currentPosition!! < total) {
+                            currentPosition = try {
+                                Thread.sleep(1000)
+                                mediaPlayer?.currentPosition
+                            } catch (e: InterruptedException) {
+                                return@Thread
+                            } catch (e: Exception) {
+                                return@Thread
+                            }
+                            if (currentPosition != null) {
+                                seekBar.progress = currentPosition
+                            }
+                        }
+                    }
+                }.start()
+            }
+            wasPlaying = false
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun setFabButtonListener() {
+        playButton.setOnClickListener {
+            //TODO
+        }
     }
 
     private fun setSearchView() {
@@ -222,7 +349,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun initStartAppSdk() {
         // NOTE always use test ads during development and testing
-        StartAppSDK.setTestAdsEnabled(BuildConfig.DEBUG);
+        StartAppSDK.setTestAdsEnabled(BuildConfig.DEBUG)
+        StartAppAd.disableSplash()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        clearMediaPlayer()
+    }
+
+    fun clearMediaPlayer() {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
 }
