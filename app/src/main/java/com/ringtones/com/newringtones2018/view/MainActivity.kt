@@ -32,17 +32,19 @@ import kotlin.math.ceil
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var ringtone: String
+    private var resId: Int = 0
     private lateinit var mToolbar: Toolbar
     private lateinit var adapter: MyAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: EditText
     private lateinit var songName: TextView
     private lateinit var seekBar: SeekBar
-    private lateinit var duration: TextView
     private lateinit var playButton: FloatingActionButton
     private lateinit var handler: Handler
     private val SHARED_PREFS_GDPR_SHOWN = "gdpr_dialog_was_shown"
     private var mediaPlayer: MediaPlayer? = null
+    private lateinit var adView: TextView
     private var wasPlaying = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,13 +60,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpUI(){
-
         mToolbar = findViewById(R.id.toolbar)
         searchView = findViewById(R.id.search_view)
         songName = findViewById(R.id.tv_song_name)
         seekBar = findViewById(R.id.tv_seekbar)
-        duration = findViewById(R.id.tv_duration)
         playButton = findViewById(R.id.tv_play_button)
+        adView = findViewById(R.id.tv_ad_view)
+        adViewListener()
         setSearchView()
         setFabButtonListener()
         setSeekBarListener()
@@ -87,16 +89,11 @@ class MainActivity : AppCompatActivity() {
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                duration.visibility = View.VISIBLE
             }
 
             override fun onProgressChanged(seekBar: SeekBar,progress : Int, fromTouch: Boolean) {
-                duration.visibility = View.VISIBLE
                 val x: Int = ceil(progress / 1000f).toInt()
-
-
                 if (x == 0 && !mediaPlayer?.isPlaying!!) {
-                   // clearMediaPlayer()
                     playButton.setImageDrawable(ContextCompat.getDrawable(applicationContext, android.R.drawable.ic_media_play))
                     seekBar.progress = 0
                 }
@@ -108,6 +105,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun adViewListener() {
+        adView.setOnClickListener {
+           /* val mp: MediaPlayer = MediaPlayer.create(this, resId)
+            val setRingtone = SetRingtoneFragment()
+
+            setRingtone.setMedia(mp, ringtone, resId)
+
+            val setRingtoneFragment = SetRingtoneFragment()
+            setRingtoneFragment.show(supportFragmentManager, "set ringtone")*/
+        }
     }
 
 /*    fun run() {
@@ -130,60 +139,72 @@ class MainActivity : AppCompatActivity() {
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 val bundle: Bundle = msg.data
-                val resId = bundle.getInt("id")
-                val songName = bundle.getString("song")
-                songName?.let { playSong(it, resId) }
+                resId = bundle.getInt("id")
+                ringtone = bundle.getString("song")!!
+                ringtone?.let { playSong(it, resId) }
             }
         }
     }
 
-    fun playSong(songName: String, resId: Int) {
+    fun playSong(ringtone: String, resId: Int) {
         try {
             if (mediaPlayer !=null && mediaPlayer?.isPlaying!!) {
                 clearMediaPlayer()
                 seekBar.progress = 0
-                wasPlaying = true
+                //wasPlaying = true
                 playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_play))
+            } else {
+                playLogic(ringtone, resId)
             }
-            if (!wasPlaying) {
-                val descriptor: AssetFileDescriptor = resources.openRawResourceFd(resId)
-                mediaPlayer?.setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
-                descriptor.close()
-                mediaPlayer?.prepare()
-                mediaPlayer?.setVolume(0.5f, 0.5f)
-                mediaPlayer?.isLooping = false
-                seekBar.max = mediaPlayer?.duration!!
-                mediaPlayer?.start()
-                Thread{
-                    playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_pause))
-                    var currentPosition = mediaPlayer?.currentPosition
-                    val total = mediaPlayer?.duration!!
-                    if (currentPosition != null) {
-                        while (mediaPlayer?.isPlaying!! && currentPosition!! < total) {
-                            currentPosition = try {
-                                Thread.sleep(1000)
-                                mediaPlayer?.currentPosition
-                            } catch (e: InterruptedException) {
-                                return@Thread
-                            } catch (e: Exception) {
-                                return@Thread
-                            }
-                            if (currentPosition != null) {
-                                seekBar.progress = currentPosition
-                            }
-                        }
-                    }
-                }.start()
-            }
-            wasPlaying = false
+            //wasPlaying = false
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
     }
 
+    fun playLogic(ringtone: String, resId: Int) {
+        val descriptor: AssetFileDescriptor = resources.openRawResourceFd(resId)
+        mediaPlayer = MediaPlayer()
+        mediaPlayer?.setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
+        descriptor.close()
+        mediaPlayer?.prepare()
+        mediaPlayer?.setVolume(0.5f, 0.5f)
+        mediaPlayer?.isLooping = true
+        seekBar.max = mediaPlayer?.duration!!
+        mediaPlayer?.start()
+        songName.text = ringtone
+        playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_pause))
+
+        Thread{
+            var currentPosition = mediaPlayer?.currentPosition
+            val total = mediaPlayer?.duration!!
+            if (currentPosition != null) {
+                while (mediaPlayer?.isPlaying!! && currentPosition!! < total) {
+                    currentPosition = try {
+                        Thread.sleep(1000)
+                        mediaPlayer?.currentPosition
+                    } catch (e: InterruptedException) {
+                        return@Thread
+                    } catch (e: Exception) {
+                        return@Thread
+                    }
+                    if (currentPosition != null) {
+                        seekBar.progress = currentPosition
+                    }
+                }
+            }
+        }.start()
+    }
+
     private fun setFabButtonListener() {
         playButton.setOnClickListener {
-            //TODO
+            if(mediaPlayer?.isPlaying!!) {
+                playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_play))
+                clearMediaPlayer()
+            } else {
+                playButton.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_media_pause))
+                playLogic(ringtone, resId)
+            }
         }
     }
 
@@ -360,7 +381,8 @@ class MainActivity : AppCompatActivity() {
 
     fun clearMediaPlayer() {
         mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        //mediaPlayer?.reset()
+        //mediaPlayer?.release()
+       // mediaPlayer = null
     }
 }

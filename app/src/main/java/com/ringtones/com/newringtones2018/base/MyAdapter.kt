@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ringtones.com.newringtones2018.R
 import com.ringtones.com.newringtones2018.view.SetRingtoneFragment
 import es.claucookie.miniequalizerlibrary.EqualizerView
+import kotlinx.android.synthetic.main.list.view.*
 
 /**
  * Created by sachin on 17/12/17.
@@ -44,6 +45,25 @@ class MyAdapter(private var context: Context, private var handler: Handler, priv
             mExpandedPosition = if (isExpandedArray[position]) -1 else position
             notifyDataSetChanged()
         }
+
+        holder.itemView.option_menu.setOnClickListener {
+            /*val mp: MediaPlayer = MediaPlayer.create(context, resID[position])
+            val setRingtone = SetRingtoneFragment()
+
+            setRingtone.setMedia(mp,listContent[position],resID[position])
+
+            fragManager
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_in_top)
+                    .replace(R.id.content_frame, setRingtone, "ringtone")
+                    .addToBackStack(null)
+                    .commit()*/
+            val mp: MediaPlayer = MediaPlayer.create(context, resID[position])
+            val setRingtone = SetRingtoneFragment()
+            setRingtone.setMedia(mp, listContent[position],resID[position])
+            val setRingtoneFragment = SetRingtoneFragment()
+            setRingtoneFragment.show(fragManager, "set ringtone")
+        }
     }
 
     override fun getItemCount() = listContent.size
@@ -55,12 +75,14 @@ class MyAdapter(private var context: Context, private var handler: Handler, priv
         private val cardView: CardView
         private val equilizer: EqualizerView
         private var isExpanded: Boolean
+        private val optionMenu: ImageView
 
         init {
             ringtoneName = itemView.findViewById(R.id.name)
             playBtn = itemView.findViewById(R.id.options)
             cardView = itemView.findViewById(R.id.card_view)
             equilizer= itemView.findViewById(R.id.equalizer_view)
+            optionMenu = itemView.findViewById(R.id.option_menu)
             isExpanded = false
         }
 
@@ -68,7 +90,7 @@ class MyAdapter(private var context: Context, private var handler: Handler, priv
             equilizer.visibility = if (expanded) View.VISIBLE else View.INVISIBLE
             ringtoneName.text = name
 
-            if(equilizer.visibility == View.VISIBLE){
+            if (equilizer.visibility == View.VISIBLE) {
                 /*val mp: MediaPlayer = MediaPlayer.create(context,resource)
                 val setRingtone = SetRingtoneFragment()
                 setRingtone.setMedia(mp,name,resource)

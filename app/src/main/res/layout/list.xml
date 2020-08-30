@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingLeft="7dp"
     android:paddingRight="7dp"
     >
 
-    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         card_view:cardBackgroundColor="@color/cardview_light_background"
         >
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="10dp">
@@ -29,12 +30,13 @@
                 <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+
                     <ImageView
                         android:id="@+id/options"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        android:background="@mipmap/outline_play_circle_filled_white_black_48dp" />
+                        android:background="@mipmap/outline_play_circle_filled_white_black_48dp"
+                        android:visibility="visible" />
 
                     <es.claucookie.miniequalizerlibrary.EqualizerView
                         xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -49,13 +51,13 @@
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:text="testingddsasdd"
-                android:paddingTop="5dp"
+                android:layout_width="215dp"
+                android:layout_height="28dp"
                 android:layout_toRightOf="@+id/linear"
                 android:paddingLeft="10dp"
+                android:paddingTop="5dp"
                 android:paddingBottom="5dp"
+                android:text="testingddsasdd"
                 android:textColor="@color/text_main"
                 android:textSize="15dp"
                 card_view:fontFamily="@font/roboto" />
@@ -63,7 +65,7 @@
             <ImageView
                 android:id="@+id/option_menu"
                 android:layout_toRightOf="@+id/name"
-                android:layout_width="30dp"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:src="@drawable/baseline_reorder_black"
                 android:layout_alignParentRight="true" />

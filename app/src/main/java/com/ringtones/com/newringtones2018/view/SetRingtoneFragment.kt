@@ -21,13 +21,14 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.ringtones.com.newringtones2018.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class SetRingtoneFragment : Fragment(){
+class SetRingtoneFragment : DialogFragment(){
 
     @get:JvmName("getContext_")
     private lateinit var view: View
@@ -48,7 +49,7 @@ class SetRingtoneFragment : Fragment(){
     private var isAdClick: Boolean = true;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        view = inflater.inflate(R.layout.set_ringtone, container, false)
+        view = inflater.inflate(R.layout.set_ringtone, container)
         stopRingtone = view.findViewById(R.id.stop_ringtone)
         setDefaultRingtone = view.findViewById(R.id.call_ringtone)
         setNotificationRingtone = view.findViewById(R.id.notification_ringtone)
@@ -58,7 +59,7 @@ class SetRingtoneFragment : Fragment(){
 
         adListener()
 
-        mp.start()
+       // mp.start()
 
         setDefaultRingtone.setOnClickListener{
             isRingtone=true
@@ -209,9 +210,9 @@ class SetRingtoneFragment : Fragment(){
     }
 
     private fun stopMedia() {
-        mp.stop()// stops any current playing song
-        mp.release()
-        fragmentManager?.popBackStack()
+        /*mp.stop()// stops any current playing song
+        mp.release()*/
+        dismiss()
     }
 
     private fun checkPermission() = ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED

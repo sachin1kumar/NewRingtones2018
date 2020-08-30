@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="PLAY/STOP SONG."
+            android:text="Select ringtone to play"
             android:textStyle="bold" />
 
         <SeekBar
@@ -91,11 +91,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp" />
-
-        <TextView
-            android:id="@+id/tv_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/tv_play_button"
